@@ -37,22 +37,22 @@ FEATURE_ORDER = [
     "AMT_ANNUITY",
     "goods_price_credit_ratio",
     "bureau_credit_types",
+    "prev_approved_ratio",
     "AMT_CREDIT",
+    "FLAG_MOBIL",
     "bureau_days_credit_mean",
+    "FLAG_EMP_PHONE",
     "credit_income_ratio",
+    "geo_stability",
     "AMT_GOODS_PRICE",
     "annuity_income_ratio",
     "bureau_closed_count",
-    "bureau_active_count",
-    "cc_limit_mean",
-    "cc_utilization",
-    "prev_approved_ratio",
-    "FLAG_MOBIL",
-    "FLAG_EMP_PHONE",
-    "geo_stability",
     "inst_payment_ratio",
     "FLAG_OWN_REALTY",
+    "bureau_active_count",
+    "cc_limit_mean",
     "inst_dpd_mean",
+    "cc_utilization",
     "FLAG_WORK_PHONE",
 ]
 
@@ -110,6 +110,11 @@ def health():
 def predict(req: PredictRequest):
     if model is None:
         raise HTTPException(status_code=503, detail="Model not loaded")
+
+    # These features are stored as negative values in training data (Home Credit convention)
+    # Negate them so the model receives the expected sign
+    req.bureau_days_credit_mean = -abs(req.bureau_days_credit_mean)
+    req.inst_dpd_mean = -abs(req.inst_dpd_mean)
 
     # Build feature vector in correct order
     features = np.array([[getattr(req, f) for f in FEATURE_ORDER]])
