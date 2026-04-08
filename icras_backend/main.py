@@ -112,7 +112,7 @@ def predict(req: PredictRequest):
         raise HTTPException(status_code=503, detail="Model not loaded")
 
     # These features are stored as negative values in training data (Home Credit convention)
-    # Negate them so the model receives the expected sign
+    # We Negate them so the model receives the expected sign for accuratre inference
     req.bureau_days_credit_mean = -abs(req.bureau_days_credit_mean)
     req.inst_dpd_mean = -abs(req.inst_dpd_mean)
 
